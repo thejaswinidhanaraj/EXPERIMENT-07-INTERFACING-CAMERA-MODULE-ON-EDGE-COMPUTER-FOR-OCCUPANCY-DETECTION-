@@ -91,7 +91,52 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
+### PROGRAM:
+```
+import cv2
+import imutils
 
+# DroidCam URL
+url = "http://172.17.100.156:4747/video"
+
+# Initialize video capture from DroidCam stream
+cap = cv2.VideoCapture(url)
+
+# Initialize HOG descriptor for person detection
+hog = cv2.HOGDescriptor()
+hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to grab frame")
+        break
+
+    # Resize frame for faster processing
+    frame = imutils.resize(frame, width=640)
+
+    # Detect people
+    rects, weights = hog.detectMultiScale(
+        frame,
+        winStride=(4, 4),
+        padding=(8, 8),
+        scale=1.05
+    )
+
+    # Draw bounding boxes
+    for (x, y, w, h) in rects:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    # Display results
+    cv2.imshow("Occupancy Detection", frame)
+
+    # Exit on 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
 ### SCREEN SHOTS OF OUTPUT 
 
 ![WhatsApp Image 2026-02-27 at 1 12 44 PM](https://github.com/user-attachments/assets/6e178254-51e7-440e-b3f4-7c93ad3e241a)
